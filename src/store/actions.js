@@ -18,7 +18,21 @@ export default {
       });
       commit("setReconnect", false);
 
-      console.log(state.user);
+      const rooms = currentUser.rooms.map(room => ({
+        id: room.id,
+        name: room.name
+      }));
+      commit("setRooms", rooms);
+      const activeRoom = state.activeRoom || rooms[0]; // pick last used room, or the first one
+      if (activeRoom) {
+        commit("setActiveRoom", {
+          id: activeRoom.id,
+          name: activeRoom.name
+        });
+        await chatkit.subscribeToRoom(activeRoom.id);
+        return true;
+      }
+      return false;
     } catch (error) {
       handleError(commit, error);
     } finally {
