@@ -47,6 +47,7 @@ async function subscribeToRoom(roomId) {
       },
       onUserStartedTyping: user => {
         store.commit("setUserTyping", user.id);
+        console.log("typing");
       },
       onUserStoppedTyping: () => {
         store.commit("setUserTyping", null);
@@ -57,7 +58,25 @@ async function subscribeToRoom(roomId) {
   return activeRoom;
 }
 
+async function sendMessage(text) {
+  const messageId = await currentUser.sendMessage({
+    text,
+    roomId: activeRoom.id
+  });
+  return messageId;
+}
+
+export function isTyping(roomId) {
+  currentUser.isTypingIn({ roomId });
+}
+
+function disconnectUser() {
+  currentUser.disconnnect();
+}
+
 export default {
   connectUser,
-  subscribeToRoom
+  subscribeToRoom,
+  sendMessage,
+  disconnectUser
 };
